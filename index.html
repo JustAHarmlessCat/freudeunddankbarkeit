@@ -50,10 +50,19 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       transform: translateY(0);
       backdrop-filter: blur(8px);
+      box-sizing: border-box;
     }
     .box:hover {
       box-shadow: 0 4px 16px rgba(0,0,0,0.2);
       transform: translateY(-2px) scale(1.05);
+    }
+    .draggable {
+      cursor: grab;
+      user-select: none;
+    }
+    .draggable.dragging:hover {
+      transform: none !important;
+      box-shadow: none !important;
     }
     .dark .box {
       background: rgba(100, 100, 100, 0.5);
@@ -103,24 +112,34 @@
 <body>
   <h1>freudeunddankbarkeit.de</h1>
   <p class="subtitle">Hier empfinden wir Freude und Dankbarkeit</p>
-  <div style="display:flex; flex-direction:column; align-items:center; gap: 20px; position: absolute; left: 75px; top: calc(50% - 150px);">
-    <div style="display:flex; justify-content:center; gap: 20px;">
-      <a href="https://freudeunddankbarkeit.duckdns.org" class="box" id="box3" style="cursor: pointer;">
-        <img src="grafik.png" style="max-width:350px; height:230px; display: block;">
-      </a>
-    </div>
-  </div>
-  <div style="position: fixed; bottom: 20px; left: 20px; display:flex; gap: 20px;">
-    <a href="https://kups.ub.uni-koeln.de/942/1/Prom.pdf" class="box quote-box" id="box1" style="cursor: pointer;">
-      <img src="grafik1.jpeg" style="max-width:220px; height:150px; display: block;">
-    </a>
-    <a href="https://freudeunddankbarkeit.duckdns.org/apps/contacts/circle/nre7YvxHK9gQbu3wPGgOTcLKgXtkzOr" class="box quote-box" id="box2" style="cursor: pointer;">
-      <img src="grafik2.png" style="max-width:220px; height:150px; display: block;">
-    </a>
-    <div class="box" id="quoteBox" style="width: 220px; height: 150px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-size: 14px; color: rgba(255, 255, 255, 0.9); text-shadow: 0 2px 4px rgba(0,0,0,0.3); font-weight: normal;">
+  <!-- Central container for layout -->
+  <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <!-- Center quote box -->
+    <div class="box" id="quoteBox" style="width: 240px; height: 160px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-size: 14px; color: rgba(255, 255, 255, 0.9); text-shadow: 0 2px 4px rgba(0,0,0,0.3); font-weight: normal;">
       Hover über die Bilder, für den Lexikon-Eintrag
     </div>
   </div>
+  
+  <!-- Draggable boxes (initially around center) -->
+  <a href="https://kups.ub.uni-koeln.de/942/1/Prom.pdf" class="box draggable" id="box1" style="position: absolute; top: 20vh; left: 5vw; width: 220px; height: 150px; padding: 0; overflow: hidden; cursor: pointer;">
+    <img src="grafik1.jpeg" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  </a>
+  
+  <a href="https://freudeunddankbarkeit.duckdns.org/apps/contacts/circle/nre7YvxHK9gQbu3wPGgOTcLKgXtkzOr" class="box draggable" id="box2" style="position: absolute; top: 20vh; right: 5vw; width: 220px; height: 150px; padding: 0; overflow: hidden; cursor: pointer;">
+    <img src="grafik2.png" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  </a>
+  
+  <a href="https://freudeunddankbarkeit.duckdns.org" class="box draggable" id="box3" style="position: absolute; top: 5vh; left: 50%; transform: translateX(-50%); width: 350px; height: 230px; padding: 0; overflow: hidden; cursor: pointer;">
+    <img src="grafik.png" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  </a>
+  
+  <a href="https://www.youtube.com/watch?v=EsmjtvQrrHk"class="box draggable" id="box4" style="position: absolute; bottom: 15vh; left: 5vw; width: 280px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; cursor: grab; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.9); text-shadow: 0 2px 4px rgba(0,0,0,0.3); box-sizing: border-box; overflow: hidden;">
+    <img src="grafik4.png" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+  </a>
+  
+  <a href="https://www.youtube.com/watch?v=_LwjWz1mYoc" class="box draggable" id="box5" style="position: absolute; bottom: 15vh; right: 5vw; width: 280px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; cursor: grab; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.9); text-shadow: 0 2px 4px rgba(0,0,0,0.3); box-sizing: border-box; overflow: hidden;">
+    <img src="grafik5.png" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+  </a>
   <button id="toggleModeBtn" style="
     position: fixed;
     bottom: 20px;
@@ -179,7 +198,9 @@
     const quotes = {
       box1: '<b><i>Wink mit dem Zaunfahl</i></b><br>- Verlangt nach Aufmerksamkeit; auch bekannt als [Klausurrelevant]',
       box2: '<b><i>Die Peitsche</i></b><br>- Subtile Warnung an entsprechender Stelle keine Fehler zu begehen',
-      box3: '<b><i>Freude und Dankbarkeit</i></b><br>- Wird empfunden bei Erlangung neuer Kenntnisse; steigert sich, wenn Kontext mathematisch'
+      box3: '<b><i>Freude und Dankbarkeit</i></b><br>- Wird empfunden bei Erlangung neuer Kenntnisse; steigert sich, wenn Kontext mathematisch',
+      box4: '<b><i>Die Quotientenregel</i></b><br>Die berühmte Zahn Minus Nuts Merkregel.',
+      box5: '<b><i>Weihnnachtskatze</i></b><br>-Die Abituraufgabe ist so schwer, dass nur eine Katze helfen kann'
     };
 
     document.getElementById('box1').addEventListener('mouseenter', function() {
@@ -193,10 +214,106 @@
     document.getElementById('box3').addEventListener('mouseenter', function() {
       quoteBox.innerHTML = quotes.box3;
     });
+    document.getElementById('box4').addEventListener('mouseenter', function() {
+      quoteBox.innerHTML = quotes.box4;
+    });
+    document.getElementById('box5').addEventListener('mouseenter', function() {
+      quoteBox.innerHTML = quotes.box5;
+    });
 
     document.getElementById('quoteBox').addEventListener('mouseleave', function() {
       quoteBox.textContent = 'Hover über die Bilder, um mehr zu erfahren';
     });
+
+    // Drag-and-drop support for boxes (mouse + touch)
+    (function() {
+      let dragElem = null;
+      let offsetX = 0;
+      let offsetY = 0;
+      let startX = 0;
+      let startY = 0;
+      let hasMoved = false;
+      const DRAG_THRESHOLD = 5;
+
+      function startDrag(e) {
+        const ev = (e.type === 'touchstart') ? e.touches[0] : e;
+        dragElem = e.currentTarget;
+        const rect = dragElem.getBoundingClientRect();
+        offsetX = ev.clientX - rect.left;
+        offsetY = ev.clientY - rect.top;
+        startX = ev.clientX;
+        startY = ev.clientY;
+        hasMoved = false;
+        dragElem.classList.add('dragging');
+        // Fix size to prevent resizing, move to body for free positioning
+        dragElem.style.width = rect.width + 'px';
+        dragElem.style.height = rect.height + 'px';
+        dragElem.style.position = 'absolute';
+        dragElem.style.left = rect.left + window.scrollX + 'px';
+        dragElem.style.top = rect.top + window.scrollY + 'px';
+        dragElem.style.zIndex = 2000;
+        document.body.appendChild(dragElem);
+
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchmove', onMove, {passive:false});
+        window.addEventListener('touchend', endDrag);
+        e.preventDefault();
+      }
+
+      function onMove(e) {
+        if (!dragElem) return;
+        const ev = (e.type === 'touchmove') ? e.touches[0] : e;
+        const distance = Math.sqrt(Math.pow(ev.clientX - startX, 2) + Math.pow(ev.clientY - startY, 2));
+        if (distance > DRAG_THRESHOLD) {
+          hasMoved = true;
+        }
+        let x = ev.clientX - offsetX;
+        let y = ev.clientY - offsetY;
+        // constrain to viewport
+        const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        const w = parseFloat(dragElem.style.width) || dragElem.getBoundingClientRect().width;
+        const h = parseFloat(dragElem.style.height) || dragElem.getBoundingClientRect().height;
+        x = Math.min(Math.max(0, x), vw - w);
+        y = Math.min(Math.max(0, y), vh - h);
+        dragElem.style.left = (x + window.scrollX) + 'px';
+        dragElem.style.top = (y + window.scrollY) + 'px';
+        e.preventDefault();
+      }
+
+      function endDrag() {
+        if (!dragElem) return;
+        dragElem.classList.remove('dragging');
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', endDrag);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', endDrag);
+        // Keep element where user dropped it (absolute positioning)
+        dragElem = null;
+      }
+
+      // attach handlers to draggable items
+      function attachDraggables() {
+        document.querySelectorAll('.draggable').forEach(el => {
+          el.addEventListener('mousedown', startDrag);
+          el.addEventListener('touchstart', startDrag, {passive:false});
+          // Prevent anchor navigation only if actually dragged
+          el.addEventListener('click', function(e) {
+            if (hasMoved) {
+              e.preventDefault();
+              e.stopPropagation();
+              hasMoved = false; // reset flag
+            }
+          }, true);
+        });
+      }
+
+      // run on load
+      attachDraggables();
+      // also re-attach if new elements are added later
+      new MutationObserver(attachDraggables).observe(document.body, {childList: true, subtree: true});
+    })();
 
 
     
@@ -224,11 +341,11 @@
           `;
 
           // 3. Container-Positionierung
-          Object.assign(zitatContainer.style, {
+            Object.assign(zitatContainer.style, {
               position: 'fixed',
-              top: '320px',
-              right: '90px',
-              transform: 'translateY(-50%)',
+              bottom: '15vh',
+              left: '50%',
+              transform: 'translateX(-50%)',
               color: 'rgba(255, 255, 255, 0.9)',
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
               fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -287,8 +404,9 @@
       const autor = document.createElement('div');
       autor.textContent = '- Knetter';
       autor.style.position = 'fixed';
-      autor.style.top = '375px';
-      autor.style.right = '110px';
+      autor.style.bottom = '8vh';
+      autor.style.left = '50%';
+      autor.style.transform = 'translateX(-50%)';
       autor.style.color = 'rgba(255, 255, 255, 0.7)';
       autor.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
       autor.style.fontSize = '16px';
